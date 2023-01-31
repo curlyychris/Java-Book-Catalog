@@ -1,0 +1,217 @@
+//Christy Karam 18249 Assignment 1
+package assignment1;
+//Import the Scanner class
+import java.util.Scanner;
+import java.io.File;
+//Import the FileWriter class
+import java.io.FileWriter; 
+//put files where src folder is
+
+public class BookCatalog {
+	//Create a Scanner object
+	Scanner scanner=new Scanner(System.in);
+	//an array of type class Book that can hold up to 20 books
+	Book[] books=new Book[20];
+	//menu to display the options the users can choose
+	public void menu() 
+	{
+		askFileFromUser();
+		String option;
+		//keeps showing the menu for the user until the user presses 5
+		do 
+		{
+			System.out.println("Book Catalog Menu:");
+			System.out.println("1) Add new book entry");
+			System.out.println("2) Delete a book entry");
+			System.out.println("3) Display the books currently on catalog");
+			System.out.println("4) Save the book in a text file");
+			System.out.println("5) Exit");
+			System.out.print("Please enter your choice: ");
+			//reads user input (nextLine didnt work for some reason, when this happens use next())
+			option=scanner.nextLine();	
+			//calling the userOption method that does what the 
+			//user wants based on which input they chose
+			usersOption(option);
+		}while(option!="5");		
+	}
+	
+	private void askFileFromUser()
+	{
+	
+		System.out.print("Please provide the catalog (without the file extension .txt): ");
+		String fileName=scanner.nextLine();
+		try 
+		{
+			String fileNametxt= fileName+".txt";
+			File fileRead=new File(fileNametxt);
+			Scanner scannerReadFile= new Scanner(fileRead);
+			while(scannerReadFile.hasNextLine())
+			{
+				String contentOfFile=scannerReadFile.nextLine();
+				System.out.println(contentOfFile);
+			}
+		}catch(Exception exp)
+		{
+			System.out.println("Something went wrong...");
+		}
+		
+		
+	}
+	
+	//method that takes user input and carries the following action
+	private void usersOption(String option)
+	{
+		//switch statement that calls methods based on user input 
+		switch(option) 
+		{
+		case "1":
+		{
+			addNewBookEntry();
+			break;
+		}
+
+		case "2":
+		{
+			deleteBookEntry();	
+			break;
+		}
+		case "3":
+		{
+			displayBook();
+			break;
+		}
+		case "4":
+		{
+			writeTofile();
+			break;
+		}	
+		case "5":
+		{
+			System.out.println("Bye Bye!");
+			System.exit(0);
+			break;
+		}
+		    //if 1, 2, 3, 4, or 5 are not clicked it will say wrong input and show menu again
+			default:
+			{
+				System.out.println("Wrong input, please select again");
+				break;
+			}
+				
+		}
+	}
+	//method for adding a new book entry
+	public void addNewBookEntry()
+	{
+			for(int i=0;i<books.length;i++) 
+			{
+				//takes the first empty book position 
+				if(books[i]==null)
+				{
+					Book book=new Book();
+					System.out.print("Enter the Title: ");
+					book.setBookTitle(scanner.nextLine());
+					System.out.print("Enter the Author's first name: ");
+					book.setAuthorFirstName(scanner.nextLine());
+					System.out.print("Enter the Author's last name: ");
+					book.setAuthorsLastName(scanner.nextLine());
+					Boolean isInteger=false;
+					//keep asking for an edition number if the user input isnt an integer
+					do 
+					{
+						System.out.print("Enter the edition number: ");
+						try 
+						{
+							String edition=scanner.nextLine();
+							int val=Integer.parseInt(edition);
+							book.setEditionNumber(val);
+							isInteger=true;
+						} catch (NumberFormatException ex) 
+						{
+							System.out.println("The edition as an integer....");
+							isInteger=false;
+						}
+					}while(isInteger==false);
+					books[i]=book;
+					System.out.println("\nThe following book entry has been added: ");
+					System.out.println(books[i].toString(i));
+					break;
+				}
+			}			 
+	}
+	//displays the books which are currently in the catalog
+	private void displayBook()
+	{
+		System.out.println("\n");
+		for(int i=0;i<books.length;i++)
+		{
+			//only displays the part of the array that have books
+		   //and are not empty (null)
+			if(books[i]!=null)
+			{
+				System.out.println(books[i].toString(i));
+			}
+		}
+	}
+	//deletes a book entry 
+	private void deleteBookEntry()
+	{
+		String entryToBeDeleted;
+		System.out.print("Please enter the book entry number to be deleted: ");
+		try 
+		{
+			entryToBeDeleted=scanner.nextLine();
+			int value=Integer.parseInt(entryToBeDeleted);
+			if(value<20&&value>=0)
+			{
+				//if the position the user entered is valid but already empty
+				if(books[value]==null)
+				{
+					System.out.println("\nThe book entry is empty already\n");
+				}
+				//otherwise if position entered is valid and contains something it gets deleted
+				else 
+				{
+					books[value]=null;
+				}
+			}
+			//if the user enters a position greater than 20 or less than 0 (invalid position)
+			else
+			{
+				System.out.println("\nThe book position you want to delete is not valid"
+						+"\nChoose a number between 0 and 20 inclusive\n");
+			}		
+		}catch(NumberFormatException exp)
+		{
+			System.out.println("\nBook entry to be deleted should be an integer\n");
+		}
+		
+	}
+	//method for writing the book catalog content to the file
+	private void writeTofile()
+	{
+		System.out.println("\nPlease enter the filename to write (without the extension): ");
+		String fileName=scanner.nextLine();
+		try
+		{
+			String fileNametxt= fileName+".txt";
+			FileWriter writing = new FileWriter(fileNametxt);
+			for(int i=0;i<books.length;i++)
+			{
+				//only displays the part of the array that have books
+			   //and are not empty (null)
+				if(books[i]!=null)
+				{
+					writing.write(books[i].toStringFile(i));
+				}
+			}
+			System.out.println("Successfully written on the file.");
+			writing.close();
+		} catch (Exception e) {
+		      System.out.println("An error occurred.");
+		      e.printStackTrace();
+		}
+		
+	}
+
+}
